@@ -95,11 +95,11 @@ public class Ship {
         this.speed = speed;
     }
 
-    public Integer getCrewSpeed() {
+    public Integer getCrewSize() {
         return crewSize;
     }
 
-    public void setCrewSpeed(Integer crewSize) {
+    public void setCrewSize(Integer crewSize) {
         this.crewSize = crewSize;
     }
 
