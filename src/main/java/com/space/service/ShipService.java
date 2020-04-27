@@ -1,5 +1,6 @@
 package com.space.service;
 
+import com.space.exception.BadRequestException;
 import com.space.model.Ship;
 import com.space.repository.ShipRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +35,11 @@ public class ShipService {
                 ship.getCrewSize() == null ||
                 ship.getCrewSize() < 1 ||
                 ship.getCrewSize() > 9999) {
-            throw new RuntimeException();
+            throw new BadRequestException();
+        } else if (ship.getUsed() == null) {
+            ship.setUsed(false);
         }
-        if (ship.getUsed() == null) ship.setUsed(false);
+
         ship.setSpeed((double) Math.round(ship.getSpeed() * 100) / 100);
         ship.setRating(computationRating(ship));
         return shipRepository.save(ship);

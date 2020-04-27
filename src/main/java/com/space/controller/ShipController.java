@@ -1,5 +1,6 @@
 package com.space.controller;
 
+import com.space.exception.BadRequestException;
 import com.space.model.Ship;
 import com.space.service.ShipService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,10 @@ public class ShipController {
     @ResponseBody
     public Ship createShip(@RequestBody Ship ship) {
         Ship createShip = shipService.createShip(ship);
-        if (createShip == null) throw new RuntimeException();
+        if (createShip == null) {
+            throw new BadRequestException();
+        }
+
         return createShip;
     }
 }
