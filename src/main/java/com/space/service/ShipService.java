@@ -1,6 +1,7 @@
 package com.space.service;
 
 import com.space.exception.BadRequestException;
+import com.space.exception.NotFoundException;
 import com.space.model.Ship;
 import com.space.repository.ShipRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,14 @@ public class ShipService {
         ship.setSpeed((double) Math.round(ship.getSpeed() * 100) / 100);
         ship.setRating(computationRating(ship));
         return shipRepository.save(ship);
+    }
+
+    public void delete(Long id) {
+        if (!shipRepository.existsById(id)) {
+            throw new NotFoundException();
+        }
+
+        shipRepository.deleteById(id);
     }
 
     private Double computationRating(Ship ship) {

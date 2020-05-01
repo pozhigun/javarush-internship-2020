@@ -5,9 +5,7 @@ import com.space.model.Ship;
 import com.space.service.ShipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class ShipController {
@@ -28,5 +26,20 @@ public class ShipController {
         }
 
         return createShip;
+    }
+
+    @DeleteMapping("/rest/ships/{id}")
+    public void deleteShip(@PathVariable Long id) {
+        if (!idCheck(id)) {
+            throw new BadRequestException();
+        }
+
+        shipService.delete(id);
+    }
+
+    private Boolean idCheck(Long id) {
+        return id != null &&
+                id == Math.floor(id) &&
+                id > 0;
     }
 }
