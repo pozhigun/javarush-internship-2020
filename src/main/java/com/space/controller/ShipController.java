@@ -28,16 +28,16 @@ public class ShipController {
         return createShip;
     }
 
-    @DeleteMapping("/rest/ships/{id}")
+    @DeleteMapping(value = "/rest/ships/{id}")
     public void deleteShip(@PathVariable Long id) {
-        if (!idCheck(id)) {
+        if (!isIdValid(id)) {
             throw new BadRequestException();
         }
 
         shipService.delete(id);
     }
 
-    private Boolean idCheck(Long id) {
+    private Boolean isIdValid(Long id) {
         return id != null &&
                 id == Math.floor(id) &&
                 id > 0;
