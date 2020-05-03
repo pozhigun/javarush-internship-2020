@@ -37,6 +37,15 @@ public class ShipController {
         shipService.delete(id);
     }
 
+    @GetMapping(value = "/rest/ships/{id}")
+    public Ship getShipById(@PathVariable Long id) {
+        if (!isIdValid(id)) {
+            throw new BadRequestException();
+        }
+
+        return shipService.getShipById(id);
+    }
+
     private Boolean isIdValid(Long id) {
         return id != null &&
                 id == Math.floor(id) &&

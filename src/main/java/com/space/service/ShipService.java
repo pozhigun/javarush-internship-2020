@@ -54,6 +54,14 @@ public class ShipService {
         shipRepository.deleteById(id);
     }
 
+    public Ship getShipById(Long id) {
+        if (!shipRepository.existsById(id)) {
+            throw new NotFoundException();
+        }
+
+        return shipRepository.getOne(id);
+    }
+
     private Double computationRating(Ship ship) {
         double speed = ship.getSpeed();
         double coefficientUsed = ship.getUsed() ? 0.5d : 1.0d;
