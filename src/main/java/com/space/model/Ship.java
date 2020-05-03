@@ -19,6 +19,7 @@ public class Ship {
     private String planet;
 
     @Column(name = "shipType")
+    @Enumerated(EnumType.STRING)
     private ShipType shipType;
 
     @Column(name = "prodDate")
