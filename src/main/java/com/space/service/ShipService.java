@@ -1,5 +1,6 @@
 package com.space.service;
 
+import com.space.controller.ShipOrder;
 import com.space.exception.BadRequestException;
 import com.space.exception.NotFoundException;
 import com.space.model.Ship;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.ZoneId;
+import java.util.Comparator;
 
 @Service
 public class ShipService {
@@ -114,6 +116,27 @@ public class ShipService {
 
         shipUpdate.setRating(computationRating(shipUpdate));
         return shipRepository.save(shipUpdate);
+    }
+
+    private Comparator<Ship> getComparator(ShipOrder order) {
+        if (order == null) {
+            return Comparator.comparing(Ship::getId);
+        }
+        Comparator<Ship> comparator = null;
+        switch (order.getFieldName()) {
+            case "id":
+                comparator = Comparator.comparing(Ship::getId);
+                break;
+            case "speed":
+                comparator = Comparator.comparing(Ship::getSpeed);
+                break;
+            case "prodDate":
+                comparator = Comparator.comparing(Ship::getProdDate);
+                break;
+            case "rating":
+                comparator = Comparator.comparing(Ship::getRating);
+        }
+        return comparator;
     }
 
     private Double computationRating(Ship ship) {
