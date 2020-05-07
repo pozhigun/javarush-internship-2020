@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.ZoneId;
 import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ShipService {
@@ -118,10 +120,21 @@ public class ShipService {
         return shipRepository.save(shipUpdate);
     }
 
+    public List<Ship> filteredShips(final List<Ship> filteredShips, ShipOrder order, Integer pageNumber, Integer pageSize) {
+        pageNumber = pageNumber == null ? 0 : pageNumber;
+        pageSize = pageSize == null ? 3 : pageSize;
+        return filteredShips.stream()
+                .sorted(getComparator(order))
+                .skip(pageNumber * pageSize)
+                .limit(pageSize)
+                .collect(Collectors.toList());
+    }
+
     private Comparator<Ship> getComparator(ShipOrder order) {
         if (order == null) {
             return Comparator.comparing(Ship::getId);
         }
+
         Comparator<Ship> comparator = null;
         switch (order.getFieldName()) {
             case "id":
@@ -136,6 +149,7 @@ public class ShipService {
             case "rating":
                 comparator = Comparator.comparing(Ship::getRating);
         }
+
         return comparator;
     }
 
