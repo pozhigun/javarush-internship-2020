@@ -4,6 +4,7 @@ import com.space.controller.ShipOrder;
 import com.space.exception.BadRequestException;
 import com.space.exception.NotFoundException;
 import com.space.model.Ship;
+import com.space.model.ShipType;
 import com.space.repository.ShipRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.ZoneId;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,7 +66,7 @@ public class ShipService {
             throw new NotFoundException();
         }
 
-        return shipRepository.getOne(id);
+        return shipRepository.findById(id).orElse(null);
     }
 
     @Transactional
@@ -120,10 +122,79 @@ public class ShipService {
         return shipRepository.save(shipUpdate);
     }
 
-    public List<Ship> filteredShips(final List<Ship> filteredShips, ShipOrder order, Integer pageNumber, Integer pageSize) {
+    public List<Ship> getShipList(String name, String planet, ShipType shipType, Long after, Long before,
+                                  Boolean getUsed, Double minSpeed, Double maxSpeed, Integer minCrewSize,
+                                  Integer maxCrewSize, Double minRating, Double maxRating) {
+        List<Ship> filteredShips = shipRepository.findAll();
+        if (name != null) {
+            filteredShips = filteredShips.stream()
+                    .filter(ship -> ship.getName().contains(name))
+                    .collect(Collectors.toList());
+        }
+        if (planet != null) {
+            filteredShips = filteredShips.stream()
+                    .filter(ship -> ship.getPlanet().contains(planet))
+                    .collect(Collectors.toList());
+        }
+        if (shipType != null) {
+            filteredShips = filteredShips.stream()
+                    .filter(ship -> ship.getShipType().equals(shipType))
+                    .collect(Collectors.toList());
+        }
+        if (after != null) {
+            filteredShips = filteredShips.stream()
+                    .filter(ship -> ship.getProdDate().after(new Date(after)))
+                    .collect(Collectors.toList());
+        }
+        if (before != null) {
+            filteredShips = filteredShips.stream()
+                    .filter(ship -> ship.getProdDate().before(new Date(before)))
+                    .collect(Collectors.toList());
+        }
+        if (getUsed != null) {
+            filteredShips = filteredShips.stream()
+                    .filter(ship -> ship.getUsed().equals(getUsed))
+                    .collect(Collectors.toList());
+        }
+        if (minSpeed != null) {
+            filteredShips = filteredShips.stream()
+                    .filter(ship -> ship.getSpeed() >= minSpeed)
+                    .collect(Collectors.toList());
+        }
+        if (maxSpeed != null) {
+            filteredShips = filteredShips.stream()
+                    .filter(ship -> ship.getSpeed() <= maxSpeed)
+                    .collect(Collectors.toList());
+        }
+        if (minCrewSize != null) {
+            filteredShips = filteredShips.stream()
+                    .filter(ship -> ship.getCrewSize() >= minCrewSize)
+                    .collect(Collectors.toList());
+        }
+        if (maxCrewSize != null) {
+            filteredShips = filteredShips.stream()
+                    .filter(ship -> ship.getCrewSize() <= maxCrewSize)
+                    .collect(Collectors.toList());
+        }
+        if (minRating != null) {
+            filteredShips = filteredShips.stream()
+                    .filter(ship -> ship.getRating() >= minRating)
+                    .collect(Collectors.toList());
+        }
+        if (maxRating != null) {
+            filteredShips = filteredShips.stream()
+                    .filter(ship -> ship.getRating() <= maxRating)
+                    .collect(Collectors.toList());
+        }
+
+        return filteredShips;
+    }
+
+    public List<Ship> filteredShips(final List<Ship> shipList, ShipOrder order, Integer pageNumber, Integer pageSize) {
         pageNumber = pageNumber == null ? 0 : pageNumber;
         pageSize = pageSize == null ? 3 : pageSize;
-        return filteredShips.stream()
+
+        return shipList.stream()
                 .sorted(getComparator(order))
                 .skip(pageNumber * pageSize)
                 .limit(pageSize)
